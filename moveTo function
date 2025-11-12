@@ -1,0 +1,88 @@
+// Include the IQ Library
+#include "iq_cpp.h"
+#include "cmath"
+
+double const ToothPitchMM = 4.712;
+int const numTeethXY = 12;
+int const numTeethZ = 10;
+
+using namespace vex;
+
+// x,y,z are coordinates based on the distance from the zero point in mm
+void moveTo(double x, double y, double z){
+  double stopThreshold = 1.0;
+  double approachDistance = 30.0;
+  int approachVelocity = 10;
+  int normalVelocity = 50;
+
+  MotorX.spin(forward);
+  MotorY.spin(forward);
+  MotorZ.spin(forward);
+
+  // reverse motors when necessary
+  if(MotorX.position(turns) < 0){
+    MotorX.spin(reverse);
+  }
+  if(MotorY.position(turns) < 0){
+    MotorY.spin(reverse);
+  }
+  if(MotorZ.position(turns) < 0){
+    MotorZ.spin(reverse);
+  }
+
+  MotorX.setVelocity(normalVelocity,percent);
+  MotorY.setVelocity(normalVelocity,percent);
+  MotorZ.setVelocity(normalVelocity,percent);
+
+  // checks for the moving loop
+  bool done = false;
+  bool doneX = false;
+  bool doneY = false;
+  bool doneZ = false;
+  bool approachingX = false;
+  bool approachingY = false;
+  bool approachingZ = false;
+
+  // simultanious moving for each axis loop
+  while(!done){
+    double currentX = MotorX.position(turns) * ToothPitchMM * numTeethXY;
+    double currentY = MotorY.position(turns) * ToothPitchMM * numTeethXY;
+    double currentZ = MotorZ.position(turns) * ToothPitchMM * numTeethZ;
+    double distToX = std::abs(x - currentX)
+    double distToY = std::abs(y - currentY)
+    double distToZ = std::abs(z - currentZ)
+
+    // slow down motors individually when within approach distance
+    if(!approachingX && distToX < approachDistance){
+      MotorX.setVelocity(approachVelocity)
+      approachingX = true;
+    }
+    if(!approachingY && distToY < approachDistance){
+      MotorY.setVelocity(approachVelocity)
+      approachingY = true;
+    }
+    if(!approachingZ && distToZ < approachDistance){
+      MotorZ.setVelocity(approachVelocity)
+      approachingZ = true;
+    }
+
+    // stop motors individually when within a certain threshold
+    if(distToX < stopThreshold){
+      MotorX.stop();
+      doneX = true;
+    }
+    if(distToY < stopThreshold){
+      MotorY.stop();
+      doneY = true;
+    }
+    if(distToZ < stopThreshold){
+      MotorZ.stop();
+      doneZ = true;
+    }
+
+    // stop loop when done everything
+    if(doneX && doneY && doneZ){
+      done = true;
+    }
+  }
+}
