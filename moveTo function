@@ -48,21 +48,21 @@ void moveTo(double x, double y, double z){
     double currentX = MotorX.position(turns) * ToothPitchMM * numTeethXY;
     double currentY = MotorY.position(turns) * ToothPitchMM * numTeethXY;
     double currentZ = MotorZ.position(turns) * ToothPitchMM * numTeethZ;
-    double distToX = std::abs(x - currentX)
-    double distToY = std::abs(y - currentY)
-    double distToZ = std::abs(z - currentZ)
+    double distToX = std::abs(x - currentX);
+    double distToY = std::abs(y - currentY);
+    double distToZ = std::abs(z - currentZ);
 
     // slow down motors individually when within approach distance
     if(!approachingX && distToX < approachDistance){
-      MotorX.setVelocity(approachVelocity)
+      MotorX.setVelocity(approachVelocity,percent);
       approachingX = true;
     }
     if(!approachingY && distToY < approachDistance){
-      MotorY.setVelocity(approachVelocity)
+      MotorY.setVelocity(approachVelocity,percent);
       approachingY = true;
     }
     if(!approachingZ && distToZ < approachDistance){
-      MotorZ.setVelocity(approachVelocity)
+      MotorZ.setVelocity(approachVelocity,percent);
       approachingZ = true;
     }
 
