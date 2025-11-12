@@ -2,24 +2,24 @@
 #include "iq_cpp.h"
 #include "cmath"
 
-double const ToothPitchMM = 4.712;
-int const numTeethXY = 12;
-int const numTeethZ = 10;
+double const TOOTH_PITCH_MM = 4.712;
+int const NUM_TEETH_XY = 12;
+int const NUM_TEETH_Z = 10;
 
 using namespace vex;
 
 // x,y,z are coordinates based on the distance from the zero point in mm
 void moveTo(double x, double y, double z){
-  double stopThreshold = 1.0;
-  double approachDistance = 30.0;
-  int approachVelocity = 10;
-  int normalVelocity = 50;
+  double STOP_THRESHOLD = 1.0;
+  double APPROACH_DISTANCE = 30.0;
+  int APPROACH_VELOCITY = 10;
+  int NORMAL_VELOCITY = 50;
 
   MotorX.spin(forward);
   MotorY.spin(forward);
   MotorZ.spin(forward);
 
-  // reverse motors when necessary
+  // reverse motors when necessary 
   if(MotorX.position(turns) < 0){
     MotorX.spin(reverse);
   }
@@ -30,11 +30,11 @@ void moveTo(double x, double y, double z){
     MotorZ.spin(reverse);
   }
 
-  MotorX.setVelocity(normalVelocity,percent);
-  MotorY.setVelocity(normalVelocity,percent);
-  MotorZ.setVelocity(normalVelocity,percent);
+  MotorX.setVelocity(NORMAL_VELOCITY,percent);
+  MotorY.setVelocity(NORMAL_VELOCITY,percent);
+  MotorZ.setVelocity(NORMAL_VELOCITY,percent);
 
-  // checks for the moving loop
+  // moving loop checks
   bool done = false;
   bool doneX = false;
   bool doneY = false;
@@ -45,37 +45,37 @@ void moveTo(double x, double y, double z){
 
   // simultanious moving for each axis loop
   while(!done){
-    double currentX = MotorX.position(turns) * ToothPitchMM * numTeethXY;
-    double currentY = MotorY.position(turns) * ToothPitchMM * numTeethXY;
-    double currentZ = MotorZ.position(turns) * ToothPitchMM * numTeethZ;
+    double currentX = MotorX.position(turns) * TOOTH_PITCH_MM * NUM_TEETH_XY;
+    double currentY = MotorY.position(turns) * TOOTH_PITCH_MM * NUM_TEETH_XY;
+    double currentZ = MotorZ.position(turns) * TOOTH_PITCH_MM * NUM_TEETH_Z;
     double distToX = std::abs(x - currentX);
     double distToY = std::abs(y - currentY);
     double distToZ = std::abs(z - currentZ);
 
     // slow down motors individually when within approach distance
-    if(!approachingX && distToX < approachDistance){
-      MotorX.setVelocity(approachVelocity,percent);
+    if(!approachingX && distToX < APPROACH_DISTANCE){
+      MotorX.setVelocity(APPROACH_VELOCITY,percent);
       approachingX = true;
     }
-    if(!approachingY && distToY < approachDistance){
-      MotorY.setVelocity(approachVelocity,percent);
+    if(!approachingY && distToY < APPROACH_DISTANCE){
+      MotorY.setVelocity(APPROACH_VELOCITY,percent);
       approachingY = true;
     }
-    if(!approachingZ && distToZ < approachDistance){
-      MotorZ.setVelocity(approachVelocity,percent);
+    if(!approachingZ && distToZ < APPROACH_DISTANCE){
+      MotorZ.setVelocity(APPROACH_VELOCITY,percent);
       approachingZ = true;
     }
 
     // stop motors individually when within a certain threshold
-    if(distToX < stopThreshold){
+    if(distToX < STOP_THRESHOLD){
       MotorX.stop();
       doneX = true;
     }
-    if(distToY < stopThreshold){
+    if(distToY < STOP_THRESHOLD){
       MotorY.stop();
       doneY = true;
     }
-    if(distToZ < stopThreshold){
+    if(distToZ < STOP_THRESHOLD){
       MotorZ.stop();
       doneZ = true;
     }
