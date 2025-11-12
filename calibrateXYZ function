@@ -1,0 +1,79 @@
+/*
+CALIBRATE Z:
+-> close claw 
+-> move down z-axis until hits surface (bumper)
+-> move up to the appraoch distance 
+-> move down z-axis until hits surface at approach speed (bumper)
+-> zero z-axis
+
+CALIBRATE Y:
+-> move to correct z position, remain at current x and y positions
+-> move across y-axis until hits wall (bumper)
+-> move back to the approach distance
+-> move across y-axis until hits wall at approach speed (bumper)
+-> zero y-axis
+
+CALIBRATE z:
+-> move to correct y and z position, remain at current x position
+-> move across x-axis until hits calibration object (bumper)
+-> move back to the approach distance
+-> move across x-axis until hits calibration object at approach speed (bumper)
+-> zero x-axis
+-> move back to approach and stop
+*/
+
+void calibrateXYZ(){
+  int NORMAL_VELOCITY = 50;
+  int APPROACH_VELOCITY = 10;
+  double APPROACH_DISTANCE = 1.0;     // turns
+
+  // CALIBRATE Z:
+  // TODO: close claw here using claw function
+  MotorZ.spin(reverse);
+  MotorZ.setVelocity(NORMAL_VELOCITY,percent);
+
+  while(!ClawBumper.pressing()){}
+  double tempPos = MotorZ.position(turns);
+  MotorZ.spin(forward);
+  MotorZ.setVelocity(APPROACH_VELOCITY,percent);
+
+  while(tempPos + APPROACH_DISTANCE >= MotorZ.position(turns)){}
+  MotorZ.spin(reverse);
+
+  while(!ClawBumper.pressing()){}
+  MotorZ.setPosition(0,turns); // z-axis zeroed
+
+  // CALIBRATE Y:
+  moveTo(MotorX.position(turns) * TOOTH_PITCH * NUM_TEETH_XY, MotorY.position(turns) * TOOTH_PITCH * NUM_TEETH_XY, CALIBRATE_Y_HEIGHT);
+  MotorY.spin(reverse);
+
+  while(!ClawBumper.pressing()){}
+  tempPos = MotorY.position(turns);
+  MotorY.spin(forward);
+  MotorY.setVelocity(APPROACH_VELOCITY,percent);
+
+  while(tempPos + APPROACH_DISTANCE >= MotorY.position(turns)){}
+  MotorZ.spin(reverse);
+
+  while(!ClawBumper.pressing()){}
+  MotorY.setPosition(0,turns); // y-axis zeroed
+
+  // CALIBRATE X:
+  moveTo(MotorX.position(turns) * TOOTH_PITCH * NUM_TEETH_XY, CALIBRATE_X_DIST, CALIBRATE_X_HEIGHT);
+  MotorX.spin(reverse);
+
+  while(!ClawBumper.pressing()){}
+  tempPos = MotorX.position(turns);
+  MotorX.spin(forward);
+  MotorX.setVelocity(APPROACH_VELOCITY,percent);
+
+  while(tempPos + APPROACH_DISTANCE >= MotorX.position(turns)){}
+  MotorX.spin(reverse);
+
+  while(!ClawBumper.pressing()){}
+  MotorX.setPosition(0,turns); // x-axis zeroed
+  MotorX.spin(forward);
+
+  while(tempPos + APPROACH_DISTANCE >= MotorX.position(turns)){}
+  MotorX.stop();
+}
