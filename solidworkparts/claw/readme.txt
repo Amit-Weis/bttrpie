@@ -1,1 +1,0 @@
-the claw assembly is missing the vex iq files, and i am not recreating them atm
